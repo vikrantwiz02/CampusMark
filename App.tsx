@@ -170,13 +170,14 @@ const App: React.FC = () => {
     const newSem: Semester = { id: Date.now().toString(), name: newSemesterName, updatedAt: Date.now(), isSynced: false };
     setSemesters([...semesters, newSem]);
     setNewSemesterName('');
-    if (!selectedSemesterIdForCourse) setSelectedSemesterIdForCourse(newSem.id);
+    setSelectedSemesterIdForCourse(newSem.id);
   };
 
   const handleAddCourse = (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (!newCourseName.trim() || !selectedSemesterIdForCourse) return;
-    const newCourse: Course = { id: Date.now().toString(), name: newCourseName, semesterId: selectedSemesterIdForCourse, code: newCourseCode.toUpperCase() || undefined, color: COURSE_COLORS[courses.length % COURSE_COLORS.length], updatedAt: Date.now(), isSynced: false };
+    const semesterId = selectedSemesterIdForCourse || (semesters.length > 0 ? semesters[0].id : '');
+    if (!newCourseName.trim() || !semesterId) return;
+    const newCourse: Course = { id: Date.now().toString(), name: newCourseName, semesterId: semesterId, code: newCourseCode.toUpperCase() || undefined, color: COURSE_COLORS[courses.length % COURSE_COLORS.length], updatedAt: Date.now(), isSynced: false };
     setCourses([...courses, newCourse]);
     setNewCourseName('');
     setNewCourseCode('');
@@ -238,18 +239,18 @@ const App: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 transition-colors duration-300">
-        <div className="w-full max-w-sm text-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-4 sm:p-6 transition-colors duration-300">
+        <div className="w-full max-w-sm text-center px-2">
           <div className="w-20 h-20 bg-indigo-600 rounded-[2.25rem] shadow-2xl shadow-indigo-200 dark:shadow-none flex items-center justify-center mx-auto mb-10 text-white animate-bounce-slow">
             <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           </div>
           <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-3 tracking-tight">{APP_CONFIG.NAME}</h1>
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-12">{APP_CONFIG.TAGLINE}</p>
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 rounded-[3rem] shadow-sm flex flex-col items-center gap-6">
-            <h2 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-2">Authenticated Entry</h2>
-            <div ref={googleButtonRef} className="w-full flex justify-center min-h-[56px]" />
-            <div className="w-full h-px bg-slate-100 dark:bg-slate-800 my-2" />
-            <button onClick={simulateLogin} className="w-full py-5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all active:scale-95 border-2 border-transparent">Enter as Guest</button>
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-10 rounded-[2.5rem] sm:rounded-[3rem] shadow-sm flex flex-col items-center gap-5 sm:gap-6">
+            <h2 className="text-[10px] sm:text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-2">Authenticated Entry</h2>
+            <div ref={googleButtonRef} className="w-full flex justify-center min-h-[50px] sm:min-h-[56px]" />
+            <div className="w-full h-px bg-slate-100 dark:bg-slate-800 my-1 sm:my-2" />
+            <button onClick={simulateLogin} className="w-full py-4 sm:py-5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-xl sm:rounded-2xl font-black text-[11px] sm:text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all active:scale-95 border-2 border-transparent">Enter as Guest</button>
           </div>
           <div className="mt-12"><ThemeToggleButton /></div>
         </div>
@@ -289,6 +290,7 @@ const App: React.FC = () => {
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">Add Course</h1>
           <p className="text-sm text-slate-400 dark:text-slate-500 mb-12 font-medium">Add your first subject</p>
           <form onSubmit={handleAddCourse} className="space-y-6">
+            <input type="hidden" value={selectedSemesterIdForCourse} />
             <div className="space-y-3 text-left">
               <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-3">Course Name</label>
               <input type="text" placeholder={PLACEHOLDERS.COURSE_NAME} value={newCourseName} onChange={(e) => setNewCourseName(e.target.value)} className="w-full bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 rounded-3xl px-7 py-4.5 text-base font-bold text-slate-800 dark:text-slate-100 outline-none focus:border-emerald-500 transition-all" required />
@@ -419,7 +421,7 @@ const App: React.FC = () => {
         )}
 
         {activeTab === 'courses' && (
-          <div className="animate-in fade-in slide-in-from-right-4 duration-500 pb-12">
+          <div className="animate-in fade-in slide-in-from-right-4 duration-500 pb-32">
             <div className="flex items-center justify-between mb-10">
               <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">Settings</h1>
               <button onClick={handleLogout} className="px-6 py-3 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 rounded-2xl text-[10px] font-black uppercase tracking-widest text-rose-600 transition-all active:scale-95">Logout</button>
