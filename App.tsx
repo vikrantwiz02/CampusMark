@@ -248,9 +248,9 @@ const App: React.FC = () => {
           <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-12">{APP_CONFIG.TAGLINE}</p>
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 rounded-[3rem] shadow-sm flex flex-col items-center gap-6">
             <h2 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-2">Authenticated Entry</h2>
-            <div ref={googleButtonRef} className="min-h-[44px]" />
+            <div ref={googleButtonRef} className="w-full flex justify-center min-h-[56px]" />
             <div className="w-full h-px bg-slate-100 dark:bg-slate-800 my-2" />
-            <button onClick={simulateLogin} className="w-full py-4.5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all active:scale-95 border-2 border-transparent">Enter as Guest</button>
+            <button onClick={simulateLogin} className="w-full py-5 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all active:scale-95 border-2 border-transparent">Enter as Guest</button>
           </div>
           <div className="mt-12"><ThemeToggleButton /></div>
         </div>
@@ -278,12 +278,17 @@ const App: React.FC = () => {
   }
 
   if (courses.length === 0) {
+    // Ensure first semester is selected
+    if (semesters.length > 0 && !selectedSemesterIdForCourse) {
+      setSelectedSemesterIdForCourse(semesters[0].id);
+    }
+    
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 relative transition-colors duration-300">
         <OnboardingNav />
         <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-[3rem] shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 p-10 text-center transition-all mt-10">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">Add Course</h1>
-          <p className="text-sm text-slate-400 dark:text-slate-500 mb-12 font-medium">Add subjects for {semesters[0].name}</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mb-12 font-medium">Add your first subject</p>
           <form onSubmit={handleAddCourse} className="space-y-6">
             <div className="space-y-3 text-left">
               <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-3">Course Name</label>
