@@ -36,8 +36,9 @@ async function connectToDatabase() {
 
 module.exports = async (req, res) => {
   try {
+    // Set CORS headers first
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Origin', process.env.CORS_ORIGIN || '*');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -45,43 +46,51 @@ module.exports = async (req, res) => {
       return res.status(200).end();
     }
 
-    // Check environment variables first
+    // Check environment variables
     const hasMongoUri = !!process.env.MONGODB_URI;
+    const dbName = process.env.MONGODB_DB_NAME || 'attendly';
     
+    console.log('Health check called');
+    console.log('MONGODB_URI exists:', hasMongoUri);
+    console.log('DB_NAME:', dbName);
+
     if (!hasMongoUri) {
-      return res.status(500).json({ 
+      console.error('MONGODB_URI not found in environment');
+      return res.status(200).json({ 
         status: 'error',
         database: 'not_configured',
-        error: 'MONGODB_URI environment variable is not set',
-        solution: 'Add MONGODB_URI in Vercel Project Settings → Environment Variables'
+        error: 'MONGODB_URI is not set',
+        envVars: {
+          MONGODB_URI: 'not set',
+          MONGODB_DB_NAME: dbName
+        }
       });
     }
 
     try {
       const { db } = await connectToDatabase();
-      const status = db ? 'connected' : 'disconnected';
-      console.log('Health check - DB status:', status);
-      return res.json({ 
+      console.log('MongoDB connection successful');
+      return res.status(200).json({ 
         status: 'ok', 
-        database: status,
-        dbName: process.env.MONGODB_DB_NAME || 'attendly',
+        database: 'connected',
+        dbName: dbName,
         timestamp: new Date().toISOString()
       });
     } catch (dbError) {
-      console.error('Database connection error:', dbError.message);
-      return res.status(500).json({ 
+      console.error('MongoDB connection failed:', dbError.message);
+      return res.status(200).json({ 
         status: 'error', 
         database: 'connection_failed',
         error: dbError.message,
-        solution: 'Check your MongoDB connection string and network access settings'
+        hint: 'Check MongoDB Atlas IP whitelist (set to 0.0.0.0/0) and connection string format'
       });
     }
   } catch (error) {
-    console.error('Health check critical error:', error);
-    return res.status(500).json({ 
+    console.error('Critical error:', error.message, error.stack);
+    return res.status(200).json({ 
       status: 'error',
-      error: 'Internal server error',
-      message: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 };
