@@ -23,7 +23,7 @@ const PORT = process.env.PORT || 3001;
 
 // Validate required environment variables
 const MONGODB_URI = process.env.MONGODB_URI;
-const DB_NAME = process.env.MONGODB_DB_NAME || 'attendly';
+const DB_NAME = process.env.MONGODB_DB_NAME || 'CampusMark';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '*';
 
 if (!MONGODB_URI) {

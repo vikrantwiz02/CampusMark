@@ -1,4 +1,4 @@
-# Attendly - Smart Attendance Tracker
+# CampusMark - Smart Attendance Tracker
 
 A modern attendance tracking application with Google Authentication and MongoDB cloud sync.
 
@@ -33,7 +33,7 @@ A modern attendance tracking application with Google Authentication and MongoDB 
    VITE_GOOGLE_CLIENT_ID=your-google-client-id
    VITE_API_URL=http://localhost:3000/api
    MONGODB_URI=your-mongodb-uri
-   MONGODB_DB_NAME=attendly
+   MONGODB_DB_NAME=CampusMark
    CORS_ORIGIN=*
    ```
 
@@ -52,7 +52,7 @@ A modern attendance tracking application with Google Authentication and MongoDB 
    - `VITE_GOOGLE_CLIENT_ID`
    - `VITE_API_URL=https://your-app.vercel.app/api`
    - `MONGODB_URI`
-   - `MONGODB_DB_NAME=attendly`
+   - `MONGODB_DB_NAME=CampusMark`
    - `CORS_ORIGIN=https://your-app.vercel.app`
 3. **Update Google OAuth** with your Vercel URL
 4. **Deploy** - Vercel auto-deploys from `vercel.json` config
@@ -89,7 +89,7 @@ Frontend (React) → Vercel Serverless Functions → MongoDB Atlas
 ## Project Structure
 
 ```
-attendly/
+CampusMark/
 ├── .env.local              # Environment variables
 ├── vercel.json             # Vercel deployment config
 ├── api/                    # Serverless functions
