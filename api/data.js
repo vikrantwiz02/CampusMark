@@ -4,27 +4,33 @@ let cachedClient = null;
 let cachedDb = null;
 
 async function connectToDatabase() {
-  if (cachedClient && cachedDb) {
-    return { client: cachedClient, db: cachedDb };
+  try {
+    if (cachedClient && cachedDb) {
+      return { client: cachedClient, db: cachedDb };
+    }
+
+    const MONGODB_URI = process.env.MONGODB_URI;
+    const DB_NAME = process.env.MONGODB_DB_NAME || 'attendly';
+
+    if (!MONGODB_URI) {
+      throw new Error('❌ MONGODB_URI not set in Vercel environment variables');
+    }
+
+    console.log('Connecting to MongoDB...');
+    const client = await MongoClient.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+    const db = client.db(DB_NAME);
+    console.log('✓ Connected to database:', DB_NAME);
+
+    cachedClient = client;
+    cachedDb = db;
+
+    return { client, db };
+  } catch (error) {
+    console.error('MongoDB connection error:', error.message);
+    throw error;
   }
-
-  const MONGODB_URI = process.env.MONGODB_URI;
-  const DB_NAME = process.env.MONGODB_DB_NAME || 'CampusMark';
-
-  if (!MONGODB_URI) {
-    console.error('MONGODB_URI is not set!');
-    throw new Error('MONGODB_URI environment variable is required');
-  }
-
-  console.log('Connecting to MongoDB...');
-  const client = await MongoClient.connect(MONGODB_URI);
-  const db = client.db(DB_NAME);
-  console.log('Connected to database:', DB_NAME);
-
-  cachedClient = client;
-  cachedDb = db;
-
-  return { client, db };
 }
 
 module.exports = async (req, res) => {

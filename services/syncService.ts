@@ -137,10 +137,28 @@ class SyncService {
         return Array.from(merged.values());
       };
 
+      // Merge records using date+courseId as unique key
+      const mergeRecords = (
+        local: AttendanceRecord[], 
+        remote: AttendanceRecord[]
+      ): AttendanceRecord[] => {
+        const merged = new Map<string, AttendanceRecord>();
+        
+        [...local, ...remote].forEach(record => {
+          const key = `${record.date}_${record.courseId}`;
+          const existing = merged.get(key);
+          if (!existing || record.updatedAt > existing.updatedAt) {
+            merged.set(key, record);
+          }
+        });
+        
+        return Array.from(merged.values());
+      };
+
       const mergedData = {
-        records: mergeByUpdatedAt(localData.records, remoteData.records),
-        courses: mergeByUpdatedAt(localData.courses, remoteData.courses),
-        semesters: mergeByUpdatedAt(localData.semesters, remoteData.semesters)
+        records: mergeRecords(localData.records, remoteData.records),
+        courses: mergeByUpdatedAt<Course>(localData.courses, remoteData.courses),
+        semesters: mergeByUpdatedAt<Semester>(localData.semesters, remoteData.semesters)
       };
 
       this.saveLocally(mergedData.records, mergedData.courses, mergedData.semesters);
