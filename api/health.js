@@ -38,8 +38,20 @@ module.exports = async (req, res) => {
   try {
     const { db } = await connectToDatabase();
     const status = db ? 'connected' : 'disconnected';
-    res.json({ status: 'ok', database: status });
+    console.log('Health check - DB status:', status);
+    res.json({ 
+      status: 'ok', 
+      database: status,
+      dbName: process.env.MONGODB_DB_NAME || 'attendly',
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    res.status(500).json({ status: 'error', database: 'disconnected' });
+    console.error('Health check error:', error.message);
+    res.status(500).json({ 
+      status: 'error', 
+      database: 'disconnected',
+      error: error.message,
+      mongodbUri: process.env.MONGODB_URI ? 'Set' : 'Not set'
+    });
   }
 };

@@ -12,11 +12,14 @@ async function connectToDatabase() {
   const DB_NAME = process.env.MONGODB_DB_NAME || 'CampusMark';
 
   if (!MONGODB_URI) {
+    console.error('MONGODB_URI is not set!');
     throw new Error('MONGODB_URI environment variable is required');
   }
 
+  console.log('Connecting to MongoDB...');
   const client = await MongoClient.connect(MONGODB_URI);
   const db = client.db(DB_NAME);
+  console.log('Connected to database:', DB_NAME);
 
   cachedClient = client;
   cachedDb = db;
@@ -66,6 +69,18 @@ module.exports = async (req, res) => {
     res.status(405).json({ error: 'Method not allowed' });
   } catch (error) {
     console.error('Data operation error:', error);
-    res.status(500).json({ error: 'Database operation failed' });
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      userId: req.query.userId,
+      method: req.method,
+      mongodbUri: process.env.MONGODB_URI ? 'Set' : 'Not set',
+      dbName: process.env.MONGODB_DB_NAME || 'attendly (default)'
+    });
+    res.status(500).json({ 
+      error: 'Database operation failed',
+      details: error.message,
+      hint: 'Check Vercel logs and ensure MONGODB_URI is set in environment variables'
+    });
   }
 };
