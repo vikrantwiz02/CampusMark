@@ -155,33 +155,55 @@ const App: React.FC = () => {
   const activeSemester = useMemo(() => semesters.find(s => s.id === activeCourse?.semesterId), [semesters, activeCourse]);
   const filteredRecords = useMemo(() => records.filter(r => r.courseId === activeCourseId), [records, activeCourseId]);
 
-  const handleMarkAttendance = (dateStr: string, status: AttendanceStatus) => {
+  const handleMarkAttendance = async (dateStr: string, status: AttendanceStatus) => {
     if (!activeCourseId) return;
+    let updatedRecords: AttendanceRecord[] = [];
     setRecords(prev => {
       const filtered = prev.filter(r => !(r.date === dateStr && r.courseId === activeCourseId));
-      if (status === AttendanceStatus.NONE) return filtered;
-      return [...filtered, { date: dateStr, status, courseId: activeCourseId, updatedAt: Date.now(), isSynced: false }];
+      if (status === AttendanceStatus.NONE) {
+        updatedRecords = filtered;
+        return filtered;
+      }
+      const newRecord = { date: dateStr, status, courseId: activeCourseId, updatedAt: Date.now(), isSynced: false };
+      updatedRecords = [...filtered, newRecord];
+      console.log('Marking attendance:', newRecord);
+      return updatedRecords;
     });
+    
+    // Immediately save and sync after state update
+    setTimeout(async () => {
+      await SyncService.saveLocally(updatedRecords, courses, semesters);
+    }, 100);
   };
 
-  const handleAddSemester = (e?: React.FormEvent) => {
+  const handleAddSemester = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!newSemesterName.trim()) return;
     const newSem: Semester = { id: Date.now().toString(), name: newSemesterName, updatedAt: Date.now(), isSynced: false };
-    setSemesters([...semesters, newSem]);
+    const updatedSemesters = [...semesters, newSem];
+    setSemesters(updatedSemesters);
     setNewSemesterName('');
     setSelectedSemesterIdForCourse(newSem.id);
+    
+    // Immediately save and sync
+    console.log('Creating semester:', newSem);
+    await SyncService.saveLocally(records, courses, updatedSemesters);
   };
 
-  const handleAddCourse = (e?: React.FormEvent) => {
+  const handleAddCourse = async (e?: React.FormEvent) => {
     e?.preventDefault();
     const semesterId = selectedSemesterIdForCourse || (semesters.length > 0 ? semesters[0].id : '');
     if (!newCourseName.trim() || !semesterId) return;
     const newCourse: Course = { id: Date.now().toString(), name: newCourseName, semesterId: semesterId, code: newCourseCode.toUpperCase() || undefined, color: COURSE_COLORS[courses.length % COURSE_COLORS.length], updatedAt: Date.now(), isSynced: false };
-    setCourses([...courses, newCourse]);
+    const updatedCourses = [...courses, newCourse];
+    setCourses(updatedCourses);
     setNewCourseName('');
     setNewCourseCode('');
     setActiveCourseId(newCourse.id);
+    
+    // Immediately save and sync
+    console.log('Creating course:', newCourse);
+    await SyncService.saveLocally(records, updatedCourses, semesters);
   };
 
   const handleDeleteCourse = (id: string) => {

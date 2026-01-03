@@ -36,15 +36,17 @@ class MongoService {
         return { success: true, synced: 0 };
       }
 
+      console.log(`Attempting to sync ${unsyncedRecords.length} records for user:`, userId);
       const result = await this.makeRequest('/sync/records', {
         method: 'POST',
         body: JSON.stringify({ records: unsyncedRecords, userId })
       });
 
-      console.log(`Synced ${result.synced} attendance records to MongoDB`);
+      console.log(`✓ Synced ${result.synced} attendance records to MongoDB`);
       return result;
     } catch (error) {
-      console.error('Failed to sync records:', error);
+      console.error('✗ Failed to sync records:', error);
+      alert('Failed to save attendance records to cloud. Your data is saved locally.');
       return { success: false, synced: 0 };
     }
   }
@@ -57,15 +59,17 @@ class MongoService {
         return { success: true, synced: 0 };
       }
 
+      console.log(`Attempting to sync ${unsyncedCourses.length} courses for user:`, userId);
       const result = await this.makeRequest('/sync/courses', {
         method: 'POST',
         body: JSON.stringify({ courses: unsyncedCourses, userId })
       });
 
-      console.log(`Synced ${result.synced} courses to MongoDB`);
+      console.log(`✓ Synced ${result.synced} courses to MongoDB`);
       return result;
     } catch (error) {
-      console.error('Failed to sync courses:', error);
+      console.error('✗ Failed to sync courses:', error);
+      alert('Failed to save courses to cloud. Your data is saved locally.');
       return { success: false, synced: 0 };
     }
   }
@@ -78,15 +82,17 @@ class MongoService {
         return { success: true, synced: 0 };
       }
 
+      console.log(`Attempting to sync ${unsyncedSemesters.length} semesters for user:`, userId);
       const result = await this.makeRequest('/sync/semesters', {
         method: 'POST',
         body: JSON.stringify({ semesters: unsyncedSemesters, userId })
       });
 
-      console.log(`Synced ${result.synced} semesters to MongoDB`);
+      console.log(`✓ Synced ${result.synced} semesters to MongoDB`);
       return result;
     } catch (error) {
-      console.error('Failed to sync semesters:', error);
+      console.error('✗ Failed to sync semesters:', error);
+      alert('Failed to save semesters to cloud. Your data is saved locally.');
       return { success: false, synced: 0 };
     }
   }

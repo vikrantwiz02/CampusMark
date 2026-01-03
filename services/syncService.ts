@@ -73,6 +73,10 @@ class SyncService {
 
     try {
       console.log("Syncing data to MongoDB...");
+      console.log("User ID:", userId);
+      console.log("Records to sync:", records.filter(r => !r.isSynced).length);
+      console.log("Courses to sync:", courses.filter(c => !c.isSynced).length);
+      console.log("Semesters to sync:", semesters.filter(s => !s.isSynced).length);
       
       // Sync all data types
       const [recordsResult, coursesResult, semestersResult] = await Promise.all([
