@@ -5,7 +5,7 @@ import { STATUS_CONFIG } from '../constants';
 
 interface AttendanceCalendarProps {
   records: AttendanceRecord[];
-  onMarkAttendance: (date: Date, status: AttendanceStatus) => void;
+  onMarkAttendance: (dateStr: string, status: AttendanceStatus) => void;
 }
 
 const AttendanceCalendar: React.FC<AttendanceCalendarProps> = ({ records, onMarkAttendance }) => {
@@ -86,7 +86,8 @@ const AttendanceCalendar: React.FC<AttendanceCalendarProps> = ({ records, onMark
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onMarkAttendance(new Date(year, month, day), AttendanceStatus.PRESENT);
+                      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                      onMarkAttendance(dateStr, AttendanceStatus.PRESENT);
                       setSelectedDay(null);
                     }}
                     className={`flex items-center px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${status === AttendanceStatus.PRESENT ? 'bg-emerald-600 text-white' : 'hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'}`}
@@ -96,7 +97,8 @@ const AttendanceCalendar: React.FC<AttendanceCalendarProps> = ({ records, onMark
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      onMarkAttendance(new Date(year, month, day), AttendanceStatus.ABSENT);
+                      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                      onMarkAttendance(dateStr, AttendanceStatus.ABSENT);
                       setSelectedDay(null);
                     }}
                     className={`flex items-center px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${status === AttendanceStatus.ABSENT ? 'bg-rose-500 text-white' : 'hover:bg-rose-50 dark:hover:bg-rose-900/30 text-rose-500 dark:text-rose-400'}`}
@@ -106,7 +108,8 @@ const AttendanceCalendar: React.FC<AttendanceCalendarProps> = ({ records, onMark
                   <button 
                     onClick={(e) => {
                        e.stopPropagation();
-                       onMarkAttendance(new Date(year, month, day), AttendanceStatus.NONE);
+                       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                       onMarkAttendance(dateStr, AttendanceStatus.NONE);
                        setSelectedDay(null);
                     }}
                     className="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"

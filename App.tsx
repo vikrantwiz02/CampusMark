@@ -155,9 +155,8 @@ const App: React.FC = () => {
   const activeSemester = useMemo(() => semesters.find(s => s.id === activeCourse?.semesterId), [semesters, activeCourse]);
   const filteredRecords = useMemo(() => records.filter(r => r.courseId === activeCourseId), [records, activeCourseId]);
 
-  const handleMarkAttendance = (date: Date, status: AttendanceStatus) => {
+  const handleMarkAttendance = (dateStr: string, status: AttendanceStatus) => {
     if (!activeCourseId) return;
-    const dateStr = date.toISOString().split('T')[0];
     setRecords(prev => {
       const filtered = prev.filter(r => !(r.date === dateStr && r.courseId === activeCourseId));
       if (status === AttendanceStatus.NONE) return filtered;
@@ -333,21 +332,21 @@ const App: React.FC = () => {
       {showCourseSelector && (
         <div className="fixed inset-0 z-[100] flex items-end justify-center">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-md animate-in fade-in duration-300" onClick={() => setShowCourseSelector(false)} />
-          <div className="relative w-full max-w-md bg-[#1C1717] rounded-t-[3rem] shadow-2xl p-8 pb-14 animate-in slide-in-from-bottom duration-500">
-            <div className="w-16 h-1.5 bg-white/10 rounded-full mx-auto mb-10" />
-            <div className="space-y-10 max-h-[75vh] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="relative w-full max-w-md bg-[#1C1717] rounded-t-[3rem] shadow-2xl p-6 md:p-8 pb-10 md:pb-14 animate-in slide-in-from-bottom duration-500">
+            <div className="w-16 h-1.5 bg-white/10 rounded-full mx-auto mb-8" />
+            <div className="space-y-8 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
               {semesters.map(sem => (
-                <div key={sem.id} className="space-y-5">
-                  <h3 className="text-2xl font-black text-white ml-2 tracking-tight">{sem.name}</h3>
-                  <div className="space-y-1.5">
+                <div key={sem.id} className="space-y-4">
+                  <h3 className="text-xl md:text-2xl font-black text-white ml-2 tracking-tight">{sem.name}</h3>
+                  <div className="space-y-2">
                     {courses.filter(c => c.semesterId === sem.id).map(c => (
                       <button key={c.id} onClick={() => { setActiveCourseId(c.id); setShowCourseSelector(false); }}
-                        className={`w-full flex items-center justify-between p-7 rounded-[2.5rem] transition-all group ${activeCourseId === c.id ? 'bg-white/10 ring-1 ring-white/20' : 'bg-transparent hover:bg-white/5'}`}>
-                        <div className="flex items-center gap-5 text-left">
-                          <p className={`text-2xl font-bold tracking-tight transition-colors ${activeCourseId === c.id ? 'text-white' : 'text-slate-500'}`}>{c.name}</p>
+                        className={`w-full flex items-center justify-between p-5 md:p-7 rounded-2xl md:rounded-[2.5rem] transition-all group ${activeCourseId === c.id ? 'bg-white/10 ring-1 ring-white/20' : 'bg-transparent hover:bg-white/5'}`}>
+                        <div className="flex items-center gap-4 text-left min-w-0 flex-1">
+                          <p className={`text-lg md:text-2xl font-bold tracking-tight transition-colors truncate ${activeCourseId === c.id ? 'text-white' : 'text-slate-500'}`}>{c.name}</p>
                         </div>
-                        <div className={`w-9 h-9 rounded-full border-[3px] flex items-center justify-center transition-all ${activeCourseId === c.id ? 'border-[#fca5a5] bg-[#fca5a5]' : 'border-slate-700'}`}>
-                          {activeCourseId === c.id && <div className="w-4 h-4 rounded-full bg-[#1C1717]" />}
+                        <div className={`w-8 h-8 md:w-9 md:h-9 rounded-full border-[3px] flex items-center justify-center transition-all flex-shrink-0 ${activeCourseId === c.id ? 'border-[#fca5a5] bg-[#fca5a5]' : 'border-slate-700'}`}>
+                          {activeCourseId === c.id && <div className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-[#1C1717]" />}
                         </div>
                       </button>
                     ))}
@@ -458,19 +457,19 @@ const App: React.FC = () => {
               <div className="space-y-12 mt-12">
                 {semesters.map(sem => (
                   <div key={sem.id} className="animate-in fade-in duration-500">
-                    <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-6 ml-1">{sem.name}</h3>
-                    <div className="grid grid-cols-1 gap-4">
+                    <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-6 ml-1">{sem.name}</h3>
+                    <div className="grid grid-cols-1 gap-3">
                       {courses.filter(c => c.semesterId === sem.id).map(c => (
-                        <div key={c.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[2rem] p-7 flex items-center justify-between shadow-sm group">
-                          <div className="flex items-center gap-6">
-                            <div className="w-5 h-5 rounded-full shadow-lg" style={{ backgroundColor: c.color }} />
-                            <div>
-                               <span className="text-lg font-bold text-slate-800 dark:text-slate-100">{c.name}</span>
-                               {c.code && <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{c.code}</p>}
+                        <div key={c.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between shadow-sm group">
+                          <div className="flex items-center gap-4 min-w-0 flex-1">
+                            <div className="w-4 h-4 md:w-5 md:h-5 rounded-full shadow-lg flex-shrink-0" style={{ backgroundColor: c.color }} />
+                            <div className="min-w-0 flex-1">
+                               <span className="text-base md:text-lg font-bold text-slate-800 dark:text-slate-100 block truncate">{c.name}</span>
+                               {c.code && <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{c.code}</p>}
                             </div>
                           </div>
-                          <button onClick={() => handleDeleteCourse(c.id)} className="text-slate-200 dark:text-slate-700 hover:text-rose-500 transition-all p-3 hover:bg-rose-50 dark:hover:bg-rose-900/10 rounded-2xl">
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          <button onClick={() => handleDeleteCourse(c.id)} className="text-slate-200 dark:text-slate-700 hover:text-rose-500 transition-all p-2 md:p-3 hover:bg-rose-50 dark:hover:bg-rose-900/10 rounded-xl flex-shrink-0">
+                            <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                           </button>
                         </div>
                       ))}
